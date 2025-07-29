@@ -1,0 +1,20 @@
+configparser
+einops
+fire
+h5py
+librosa
+numpy
+onnx
+pandas
+pytorch-lightning
+soundfile
+tensorboard
+torch
+torch-dct
+torchmetrics
+torchmetrics[audio]
+tqdm
+optuna
+ipywidgets
+# git+https://github.com/lava-nc/lava-dl.git@v0.3.3
+# git+https://github.com/lava-nc/lava.git

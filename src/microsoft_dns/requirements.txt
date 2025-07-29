@@ -1,0 +1,17 @@
+numpy
+soundfile
+librosa
+tempfile
+random
+argparse
+ast
+configparser
+itertools
+multiprocessing
+glob
+os
+pandas
+math
+logging
+onnxruntime
+torch

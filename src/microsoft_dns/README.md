@@ -1,0 +1,315 @@
+
+# Deep Noise Suppression (DNS) Challenge 4 - ICASSP 2022
+
+## In this repository
+
+This repository contains the datasets and scripts required for ICASSP 2022 DNS Challenge, AKA DNS
+Challenge 4, or simply **DNS4**. For more details about the challenge, please see our
+[website](https://www.microsoft.com/en-us/research/academic-program/deep-noise-suppression-challenge-icassp-2022/)
+and [paper](docs/ICASSP_2022_4th_Deep_Noise_Suppression_Challenge.pdf). For more details on the
+testing framework, please visit [P.835](https://github.com/microsoft/P.808).
+
+## Details
+
+* The **datasets_fullband** folder is a placeholder for the datasets. That is, our data downloader
+  script by default will place the downloaded audio data there. After the download, it will contain
+  clean speech, noise, and room impulse responses required for creating the training data for
+  wideband scenario. The script will also download here the test set that participants can use
+  during the development stages.
+* The **NSNet2-baseline** directory contains the inference scripts and the ONNX model for the
+  baseline Speech Enhancement method for wideband.
+* **download-dns-challenge-4.sh** - this is the script to download the data. By default, the data
+  will be placed into the `./datasets_fullband/` folder. _Please take a look at the script and
+  **uncomment** the perferred download method._ Unmodified, the script performs a dry run and
+  retrieves only the HTTP headers for each archive.
+* **download-dns-challenge-4-pdns.sh** - Same as above, but for the Personalized DNS Challenge
+  track.
+* **noisyspeech_synthesizer_singleprocess.py** - is used to synthesize noisy-clean speech pairs for
+  training purposes.
+* **noisyspeech_synthesizer.cfg** - is the configuration file used to synthesize the data. Users are
+  required to accurately specify different parameters and provide the right paths to the datasets
+  required to synthesize noisy speech.
+* **audiolib.py** - contains modules required to synthesize datasets.
+* **utils.py** - contains some utility functions required to synthesize the data.
+* **unit_tests_synthesizer.py** - contains the unit tests to ensure sanity of the data.
+* **requirements.txt** - contains all the libraries required for synthesizing the data.
+
+## Datasets
+**DEV Testset**:
+**BLIND testset**: released at https://dns4public.blob.core.windows.net/dns4archive/blind_testset_bothtracks.zip
+It has two folders, enrollment_speech (178 clips) and testclips (859 clips). It consists of 638 mobile testclips and rest are desktop/laptop testclips. Each testclips is 10s duration. Both tracks have same testclips. For Track-1 non-personalized DNS, you do not need the enrollment_speech. 
+
+## Baseline Enhanced clips
+Baseline Personalized DEV enhanced clips: https://dns4public.blob.core.windows.net/dns4archive/Baseline_personalized_dev_testset.zip
+Non-personalized Baseline model: https://github.com/microsoft/DNS-Challenge/tree/master/NSNet2-baseline
+
+Baseline Personalized BLIND enhanced clips: TBD
+
+## WAcc script
+https://github.com/microsoft/DNS-Challenge/tree/master/WAcc
+
+## Wacc transcript
+Dev testset: https://github.com/microsoft/DNS-Challenge/blob/master/WAcc/DNSChallenge4_devtest.tsv 
+Blind testset: TBD
+
+### Real-time DNS track
+
+The default directory structure and the sizes of the datasets available for main track of the DNS
+Challenge are:
+
+```
+datasets_fullband 892G
++-- dev_testset 1.7G
++-- impulse_responses 5.9G
++-- noise_fullband 58G
+\-- clean_fullband 827G
+    +-- emotional_speech 2.4G
+    +-- french_speech 62G
+    +-- german_speech 319G
+    +-- italian_speech 42G
+    +-- read_speech 299G
+    +-- russian_speech 12G
+    +-- spanish_speech 65G
+    +-- vctk_wav48_silence_trimmed 27G
+    \-- VocalSet_48kHz_mono 974M
+```
+
+In all, you will need about 1TB to store the _unpacked_ data. Archived, the same data takes about
+550GB total.
+
+### Personalized DNS track
+
+Personalized track shares the noise and IR data with the main track, and the dataset has the
+following structure:
+
+```
+. 362G
++-- datasets_fullband 64G
+|   +-- impulse_responses 5.9G
+|   \-- noise_fullband 58G
++-- pdns_training_set 294G
+|   +-- enrollment_embeddings 115M
+|   +-- enrollment_wav 42G
+|   +-- raw/clean 252G
+|       +-- english 168G
+|       +-- french 2.1G
+|       +-- german 53G
+|       +-- italian 17G
+|       +-- russian 6.8G
+|       \-- spanish 5.4G
+\-- personalized_dev_testset 3.3G
+```
+
+In all, you will need at least 380GB to store the _unpacked_ data. Archived, the same data takes
+about 200GB total.
+
+### Data checksums
+
+A CSV file containing file sizes and SHA1 checksums for audio clips in both Real-time *and*
+Personalized DNS datasets is available at:
+[dns4-datasets-files-sha1.csv.bz2](https://dns4public.blob.core.windows.net/dns4archive/dns4-datasets-files-sha1.csv.bz2).
+The archive is 41.3MB in size and can be read in Python like this:
+```python
+import pandas as pd
+
+sha1sums = pd.read_csv("dns4-datasets-files-sha1.csv.bz2", names=["size", "sha1", "path"])
+```
+
+## Code prerequisites
+- Python 3.6 and above
+- Python libraries: soundfile, librosa
+
+**NOTE:** git LFS is *no longer required* for DNS Challenge. Please use the
+`download-dns-challenge-4.sh` script in this repo to download the data.
+
+## Usage:
+
+1. Install Python libraries
+```bash
+pip3 install soundfile librosa
+```
+2. Clone the repository.
+```bash
+git clone https://github.com/microsoft/DNS-Challenge
+```
+
+3. Edit **noisyspeech_synthesizer.cfg** to specify the required parameters described in the file and
+   include the paths to clean speech, noise and impulse response related csv files. Also, specify
+   the paths to the destination directories and store the logs.
+
+4. Create dataset
+```bash
+python3 noisyspeech_synthesizer_singleprocess.py
+```
+
+## Citation:
+If you use this dataset in a publication please cite the following paper:<br />
+
+```BibTex
+@inproceedings{dubey2022icassp,
+  title={ICASSP 2022 Deep Noise Suppression Challenge},
+  author={Dubey, Harishchandra and Gopal, Vishak and Cutler, Ross and Matusevych, Sergiy and Braun, Sebastian and Eskimez, Emre Sefik and Thakker, Manthan and Yoshioka, Takuya and Gamper, Hannes and Aichner, Robert},
+  booktitle={ICASSP},
+  year={2022}
+}
+```
+
+The previous challenges were: 
+```BibTex
+@inproceedings{reddy2021interspeech,
+  title={INTERSPEECH 2021 Deep Noise Suppression Challenge},
+  author={Reddy, Chandan KA and Dubey, Harishchandra and Koishida, Kazuhito and Nair, Arun and Gopal, Vishak and Cutler, Ross and Braun, Sebastian and Gamper, Hannes and Aichner, Robert and Srinivasan, Sriram},
+  booktitle={INTERSPEECH},
+  year={2021}
+}
+```
+```BibTex
+@inproceedings{reddy2021icassp,
+  title={ICASSP 2021 deep noise suppression challenge},
+  author={Reddy, Chandan KA and Dubey, Harishchandra and Gopal, Vishak and Cutler, Ross and Braun, Sebastian and Gamper, Hannes and Aichner, Robert and Srinivasan, Sriram},
+  booktitle={ICASSP},
+  year={2021},
+}
+```
+```BibTex
+@inproceedings{reddy2020interspeech,
+  title={The INTERSPEECH 2020 deep noise suppression challenge: Datasets, subjective testing framework, and challenge results},
+  author={Reddy, Chandan KA and Gopal, Vishak and Cutler, Ross and Beyrami, Ebrahim and Cheng, Roger and Dubey, Harishchandra and Matusevych, Sergiy and Aichner, Robert and Aazami, Ashkan and Braun, Sebastian and others},
+  booktitle={INTERSPEECH},
+  year={2020}
+}
+```
+
+The baseline NSNet noise suppression:<br />
+```BibTex
+@inproceedings{9054254,
+    author={Y. {Xia} and S. {Braun} and C. K. A. {Reddy} and H. {Dubey} and R. {Cutler} and I. {Tashev}},
+    booktitle={ICASSP 2020 - 2020 IEEE International Conference on Acoustics,
+    Speech and Signal Processing (ICASSP)},
+    title={Weighted Speech Distortion Losses for Neural-Network-Based Real-Time Speech Enhancement},
+    year={2020}, volume={}, number={}, pages={871-875},}
+```
+
+```BibTex
+@misc{braun2020data,
+    title={Data augmentation and loss normalization for deep noise suppression},
+    author={Sebastian Braun and Ivan Tashev},
+    year={2020},
+    eprint={2008.06412},
+    archivePrefix={arXiv},
+    primaryClass={eess.AS}
+}
+```
+
+The P.835 test framework:<br />
+```BibTex
+@inproceedings{naderi2021crowdsourcing,
+  title={Subjective Evaluation of Noise Suppression Algorithms in Crowdsourcing},
+  author={Naderi, Babak and Cutler, Ross},
+  booktitle={INTERSPEECH},
+  year={2021}
+}
+```
+
+DNSMOS API: <br />
+```BibTex
+@inproceedings{reddy2021dnsmos,
+  title={DNSMOS: A Non-Intrusive Perceptual Objective Speech Quality metric to evaluate Noise Suppressors},
+  author={Reddy, Chandan KA and Gopal, Vishak and Cutler, Ross},
+  booktitle={ICASSP},
+  year={2021}
+}
+```
+
+```BibTex
+@inproceedings{reddy2022dnsmos,
+  title={DNSMOS P.835: A non-intrusive perceptual objective speech quality metric to evaluate noise suppressors},
+  author={Reddy, Chandan KA and Gopal, Vishak and Cutler, Ross},
+  booktitle={ICASSP},
+  year={2022}
+}
+```
+
+# Contributing
+
+This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
+the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+
+When you submit a pull request, a CLA bot will automatically determine whether you need to provide a
+CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
+provided by the bot. You will only need to do this once across all repos using our CLA.
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
+contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+# Legal Notices
+
+Microsoft and any contributors grant you a license to the Microsoft documentation and other content
+in this repository under the [Creative Commons Attribution 4.0 International Public License](https://creativecommons.org/licenses/by/4.0/legalcode),
+see the [LICENSE](LICENSE) file, and grant you a license to any code in the repository under the [MIT License](https://opensource.org/licenses/MIT), see the
+[LICENSE-CODE](LICENSE-CODE) file.
+
+Microsoft, Windows, Microsoft Azure and/or other Microsoft products and services referenced in the
+documentation may be either trademarks or registered trademarks of Microsoft in the United States
+and/or other countries. The licenses for this project do not grant you rights to use any Microsoft
+names, logos, or trademarks. Microsoft's general trademark guidelines can be found at
+http://go.microsoft.com/fwlink/?LinkID=254653.
+
+Privacy information can be found at https://privacy.microsoft.com/en-us/
+
+Microsoft and any contributors reserve all other rights, whether under their respective copyrights, patents,
+or trademarks, whether by implication, estoppel or otherwise.
+
+
+## Dataset licenses
+MICROSOFT PROVIDES THE DATASETS ON AN "AS IS" BASIS. MICROSOFT MAKES NO WARRANTIES, EXPRESS OR IMPLIED, GUARANTEES OR CONDITIONS WITH RESPECT TO YOUR USE OF THE DATASETS. TO THE EXTENT PERMITTED UNDER YOUR LOCAL LAW, MICROSOFT DISCLAIMS ALL LIABILITY FOR ANY DAMAGES OR LOSSES, INLCUDING DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, INCIDENTAL OR PUNITIVE, RESULTING FROM YOUR USE OF THE DATASETS.
+
+The datasets are provided under the original terms that Microsoft received such datasets. See below for more information about each dataset.
+
+The datasets used in this project are licensed as follows:
+1. Clean speech:
+* https://librivox.org/; License: https://librivox.org/pages/public-domain/
+* PTDB-TUG: Pitch Tracking Database from Graz University of Technology https://www.spsc.tugraz.at/databases-and-tools/ptdb-tug-pitch-tracking-database-from-graz-university-of-technology.html; License: http://opendatacommons.org/licenses/odbl/1.0/
+* Edinburgh 56 speaker dataset: https://datashare.is.ed.ac.uk/handle/10283/2791; License: https://datashare.is.ed.ac.uk/bitstream/handle/10283/2791/license_text?sequence=11&isAllowed=y
+* VocalSet: A Singing Voice Dataset https://zenodo.org/record/1193957#.X1hkxYtlCHs; License: Creative Commons Attribution 4.0 International
+* Emotion data corpus: CREMA-D (Crowd-sourced Emotional Multimodal Actors Dataset)
+https://github.com/CheyneyComputerScience/CREMA-D; License: http://opendatacommons.org/licenses/dbcl/1.0/
+* The VoxCeleb2 Dataset http://www.robots.ox.ac.uk/~vgg/data/voxceleb/vox2.html; License: http://www.robots.ox.ac.uk/~vgg/data/voxceleb/
+The VoxCeleb dataset is available to download for commercial/research purposes under a Creative Commons Attribution 4.0 International License. The copyright remains with the original owners of the video. A complete version of the license can be found here.
+* VCTK Dataset: https://homepages.inf.ed.ac.uk/jyamagis/page3/page58/page58.html; License: This corpus is licensed under Open Data Commons Attribution License (ODC-By) v1.0.
+http://opendatacommons.org/licenses/by/1.0/
+
+2. Noise:
+* Audioset: https://research.google.com/audioset/index.html; License: https://creativecommons.org/licenses/by/4.0/
+* Freesound: https://freesound.org/ Only files with CC0 licenses were selected; License: https://creativecommons.org/publicdomain/zero/1.0/
+* Demand: https://zenodo.org/record/1227121#.XRKKxYhKiUk; License: https://creativecommons.org/licenses/by-sa/3.0/deed.en_CA
+
+3. RIR datasets: OpenSLR26 and OpenSLR28:
+* http://www.openslr.org/26/
+* http://www.openslr.org/28/
+* License: Apache 2.0
+
+## Code license
+MIT License
+
+Copyright (c) Microsoft Corporation.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE

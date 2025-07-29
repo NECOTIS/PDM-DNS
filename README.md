@@ -27,23 +27,111 @@ Despite being nearly 3× more efficient in terms of multiply-operations per seco
 ## 📁 Repository Structure
 ```
 PDMDNS/
-├── src/ # Source code (Coming soon)
-├── examples/ # Audio examples: noisy, enhanced, and clean references
-└── README.md # You are here
+├── examples/                  # Sample audio files from the test set: noisy inputs, model outputs (enhanced), and clean references
+├── README.md                  # Project overview, installation, usage, and structure (this file)
+└── src/                       # Source code and resources
+    ├── data/                  # Example of audio files
+    ├── intel_code/            # Utilities and scripts related to Intel's neuromorphic DNS challenge (https://github.com/IntelLabs/IntelNeuromorphicDNSChallenge)
+    ├── microsoft_dns/         # Utilities and scripts related to the Microsoft Deep Noise Suppression Challenge
+    ├── notebooks/             # A demo jupyter notebook for evaluation
+    ├── pdmdns_solution/       # Main solution code
+    │   ├── models/            # Neural network architectures
+    │   ├── scripts/           # Training, evaluation, and inference scripts
+    │   └── utils/             # Helper functions, metrics, logging, and configuration tools
+    └── saved_checkpoints/     # Pretrained model checkpoints
+
 ```
 
 
-- 🔧 The `src/` directory will contain the full implementation of the PDMDNS model, including training, evaluation, and inference scripts.
+- 🔧 The `src/pdmdns_solution/` directory contain the full implementation of the PDMDNS model, including training, evaluation, and inference scripts.
+- 📊 The `src/notebooks/` directory contain a demo jupyter notebook for evaluation.
 - 🔊 The `examples/` directory includes audio samples showcasing PDMDNS's performance on real-world noisy signals.
 
 ---
 
-## 🚀 Coming Soon
+## ⚙️ Setup
 
-- 🧠 Spiking neural network implementation in PyTorch
-- 📊 Training and evaluation scripts
-- 📦 Pre-trained models
-- 🔉 Live inference demo on raw PDM inputs
+Before running the code, ensure you are using **Python 3.10 or higher**.
+
+### 📦 Install Dependencies
+
+```bash
+# Create and activate a virtual environment (recommended)
+python3.10 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install required packages
+pip install -r requirements.txt
+```
+
+Once the environment is ready, you can proceed to training and evaluation as described below.
+
+---
+
+
+## 🛠️ Usage
+
+This repository provides scripts to **train** and **evaluate** neuromorphic speech denoising models. The training and evaluation pipelines are customizable through command-line arguments.
+
+### 🔄 Example Usage
+
+You can run the scripts using IPython or from the command line. Below are examples of each:
+
+#### ▶️ Train a Model
+
+```python
+./src/pdmdns_solution/scripts/train.py --dataset_path ./path --config final --slurm_id 0 --data_length 2 --batch_size 16
+        --max_epochs 100 --experiment_name base_experiments Model --pdm_oversampling 128
+```
+
+#### 🧪 Evaluate a Model
+
+```python
+./src/pdmdns_solution/scripts/eval.py --dataset_path ./path --config final --slurm_id 0 --data_length 30
+        --batch_size 2 --experiment_name base_experiments Model --pdm_oversampling 128
+```
+
+---
+
+## ⚙️ Configuration Options
+
+You can choose between predefined experiment settings using the `--config final` flag combined with a `--slurm_id`:
+
+| `slurm_id` | Description        | Effect                              |
+| ---------- | ------------------ | ----------------------------------- |
+| `0`        | Base configuration | Default model setup                 |
+| `1`        | Stateful neurons   | Sets `tau_mem = 1e-3`               |
+| `2`        | Non-causal model   | Sets `archi_args['causal'] = False` |
+
+If no `slurm_id` is provided, the script falls back to fully **customizable command-line arguments**.
+
+---
+
+## 🧩 Command-Line Arguments
+
+### 🔢 General Training Arguments
+
+| Argument            | Description                             |
+| ------------------- | --------------------------------------- |
+| `--dataset_path`    | Path to the training or testing dataset |
+| `--batch_size`      | Batch size for training/evaluation      |
+| `--data_length`     | Length of audio samples in seconds      |
+| `--max_epochs`      | Number of training epochs               |
+| `--experiment_name` | Logging/Checkpoint sub-directory        |
+| `--from_checkpoint` | Resume training from checkpoint         |
+| `--multi_gpu`       | Enable multi-GPU training               |
+
+### 🧠 Model Configuration Arguments
+
+| Argument                 | Description                          |
+| ------------------------ | ------------------------------------ |
+| `--model`                | Select model type (`Model` required) |
+| `--n_chan`               | Number of frequency channels         |
+| `--dropout`              | Dropout rate                         |
+| `--pdm_oversampling`     | Oversampling factor for PDM input    |
+| `--not_spiking`          | Use non-spiking (ReLU-based) model   |
+| `--neuron`               | Neuron type (`ParaLIF-T`, etc.)      |
+| `--tau_mem`, `--tau_syn` | Time constants for neurons           |
 
 ---
 
