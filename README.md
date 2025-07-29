@@ -5,7 +5,7 @@ This repository hosts the code and resources for the paper:
 **“End-to-End Neuromorphic Speech Enhancement with PDM Microphones”**  
 *Sidi Yaya Arnaud Yarga, Sean U. N. Wood*  
 Department of Electrical and Computer Engineering, Université de Sherbrooke  
-[**Paper Link (TBD)**]
+[**Paper Link**](https://iopscience.iop.org/article/10.1088/2634-4386/adf2d4)
 
 > **PDMDNS** is a real-time speech denoising framework that directly processes raw binary Pulse Density Modulation (PDM) signals using a Spiking Neural Network (SNN), completely bypassing the conventional PDM-to-PCM conversion stage. This allows for energy-efficient, low-latency operation on neuromorphic or edge hardware.
 
@@ -51,8 +51,15 @@ PDMDNS/
 
 If you find this work useful, please consider citing our paper:
 
-[coming soon]
-
+```
+@article{10.1088/2634-4386/adf2d4,
+	author={Yarga, Sidi Yaya Arnaud and Wood, Sean U. N.},
+	title={End-to-end neuromorphic speech enhancement with PDM microphones},
+	journal={Neuromorphic Computing and Engineering},
+	url={http://iopscience.iop.org/article/10.1088/2634-4386/adf2d4},
+	year={2025}
+}
+```
 ---
 
 ## 📫 Contact
